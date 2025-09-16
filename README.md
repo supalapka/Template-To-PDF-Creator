@@ -1,5 +1,5 @@
 # Template To PDF Creator
-Back-end repository: [Template-To-PDF-Creator (React + typescript)](https://github.com/supalapka/html-to-pdf-editor)
+Front-end repository for this project: [Template-To-PDF-Creator (React + typescript)](https://github.com/supalapka/html-to-pdf-editor)
 
 ## Setup
 
