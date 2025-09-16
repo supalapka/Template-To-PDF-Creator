@@ -12,6 +12,12 @@ namespace Template_To_PDF_Creator.Repositories
 
         public async Task AddAsync(Template template)
         {
+            var entity = new Template //create new entity to avoid any value in Id
+            {
+                Name = template.Name,
+                HtmlContent = template.HtmlContent,
+            };
+
             _context.Templates.Add(template);
             await _context.SaveChangesAsync();
         }
