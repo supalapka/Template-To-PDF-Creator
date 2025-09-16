@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql_db
+    environment:
+      SA_PASSWORD: "MockPassword123!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: template_api
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=TemplateDb;User Id=sa;Password=MockPassword123!;encrypt=false"
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  sql-data:

@@ -24,7 +24,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<LocalDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Local")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IDbContext>(provider => provider.GetRequiredService<LocalDbContext>());
 
@@ -33,7 +33,37 @@ builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 builder.Services.AddScoped<IPdfService, PdfService>();
 
 
+
 var app = builder.Build();
+
+
+{  // workaround tmp solution: added to run migrations when starting from Docker
+   // if something is not working, check out to this commit 5188d2e1869eaf5b8c7c16ea46f8f6d017502299 this will revert docket setup changes
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<LocalDbContext>();
+
+    var pendingMigrations = db.Database.GetPendingMigrations();
+    if (pendingMigrations.Any())
+    {
+        var retries = 10;
+        while (retries > 0)
+        {
+            try
+            {
+                db.Database.Migrate();
+                break;
+            }
+            catch (Exception e)
+            {
+                retries--;
+                Console.WriteLine("SQL Server not ready, retrying in 3 seconds...");
+                Thread.Sleep(3000);
+            }
+        }
+    }
+}
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
