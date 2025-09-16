@@ -1,4 +1,5 @@
-This is Back-end part of  HTML Template to PDF. Front-end part: https://github.com/supalapka/html-to-pdf-editor
+# Template To PDF Creator
+Back-end repository: [Template-To-PDF-Creator (React + typescript)](https://github.com/supalapka/html-to-pdf-editor)
 
 ## Setup
 
