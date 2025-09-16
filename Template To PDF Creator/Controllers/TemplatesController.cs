@@ -51,7 +51,7 @@ namespace Template_To_PDF_Creator.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Create(Template t)
+        public async Task<IActionResult> Create([FromBody] Template t)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace Template_To_PDF_Creator.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(Template t)
+        public async Task<IActionResult> Update([FromBody] Template t)
         {
             try
             {
