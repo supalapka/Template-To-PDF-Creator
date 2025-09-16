@@ -1,11 +1,23 @@
+using Microsoft.EntityFrameworkCore;
+using Template_To_PDF_Creator.Data;
+using Template_To_PDF_Creator.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<LocalDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Local")));
+
+builder.Services.AddScoped<IDbContext>(provider => provider.GetRequiredService<LocalDbContext>());
+
+// repositories
+builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
+
 
 var app = builder.Build();
 
