@@ -29,6 +29,22 @@ namespace Template_To_PDF_Creator.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Template>> GetById(int id)
+        {
+            try
+            {
+                var template = await _templateRepo.GetByIdAsync(id);
+                if (template == null) return NotFound();
+                return template;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Create(Template t)
@@ -37,6 +53,38 @@ namespace Template_To_PDF_Creator.Controllers
             {
                 await _templateRepo.AddAsync(t);
                 return Ok(t);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(Template t)
+        {
+            try
+            {
+                await _templateRepo.UpdateAsync(t);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var template = await _templateRepo.GetByIdAsync(id);
+            if (template == null) return NotFound();
+
+            try
+            {
+                await _templateRepo.DeleteAsync(id);
+                return NoContent();
             }
             catch (Exception ex)
             {
