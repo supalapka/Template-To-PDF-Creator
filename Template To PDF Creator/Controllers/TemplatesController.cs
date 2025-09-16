@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using Template_To_PDF_Creator.Model;
 using Template_To_PDF_Creator.Repositories;
+using Template_To_PDF_Creator.Services;
 
 namespace Template_To_PDF_Creator.Controllers
 {
@@ -8,10 +10,12 @@ namespace Template_To_PDF_Creator.Controllers
     public class TemplatesController : Controller
     {
         private readonly ITemplateRepository _templateRepo;
+        private readonly IPdfService _pdfService;
 
-        public TemplatesController(ITemplateRepository repo)
+        public TemplatesController(ITemplateRepository repo, IPdfService pdfService)
         {
             _templateRepo = repo;
+            _pdfService = pdfService;
         }
 
 
@@ -85,6 +89,40 @@ namespace Template_To_PDF_Creator.Controllers
             {
                 await _templateRepo.DeleteAsync(id);
                 return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("{id}/pdf")]
+        public async Task<IActionResult> GeneratePdf(int id)
+        {
+            var template = await _templateRepo.GetByIdAsync(id);
+            if (template == null) return NotFound();
+
+            try
+            {
+                var pdfBytes = await _pdfService.GeneratePdfFromHTMLAsync(template.HtmlContent);
+                return File(pdfBytes, "application/pdf", "template.pdf");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("{id}/pdf/substitution")]
+        public async Task<IActionResult> GeneratePdfWithSubstitution(int id, [FromBody] JsonElement data)
+        {
+            var template = await _templateRepo.GetByIdAsync(id);
+            if (template == null) return NotFound();
+
+            try
+            {
+                var pdfBytes = await _pdfService.GeneratePdfFromHTMLAsync(template.HtmlContent, data);
+                return File(pdfBytes, "application/pdf", "template.pdf");
             }
             catch (Exception ex)
             {

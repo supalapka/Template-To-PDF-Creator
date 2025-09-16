@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using PuppeteerSharp;
 using Template_To_PDF_Creator.Data;
 using Template_To_PDF_Creator.Repositories;
+using Template_To_PDF_Creator.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,7 @@ builder.Services.AddScoped<IDbContext>(provider => provider.GetRequiredService<L
 
 // repositories
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
+builder.Services.AddScoped<IPdfService, PdfService>();
 
 
 var app = builder.Build();
@@ -33,5 +36,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync(); // downloading chromium once to work with Puppeteer
 
 app.Run();
