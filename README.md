@@ -9,7 +9,7 @@ Front-end repository for this project: [Template-To-PDF-Creator (React + typescr
 #### Run `docker compose up `
 - This will start SQL Server and the API
 - Open in browser: http://localhost:8080/swagger/index.html
-
+- First launch could be long because Puppeteer requires chromium and on the app start it will download it once
 
 #
 #
